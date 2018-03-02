@@ -73,7 +73,6 @@ const steps = [
   },
   {
     id: 'when',
-    // message: 'We can install in your area next Wednesday, is that OK?',
     options: [
       { value: 1, label: 'Yes', trigger: 'confirm' },
       { value: 2, label: 'No', trigger: '3' }
