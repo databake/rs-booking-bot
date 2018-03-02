@@ -45,7 +45,7 @@ function composeSteps (job) {
       id: 'vrn',
       user: true,
       validator: value => {
-        if (value.replace(' ', '').toUpperCase() === 'HY06EYH') {
+        if (value.replace(' ', '').toUpperCase() === job.vrn) {
           return true
         }
         return `sorry Graham, I can't find ${value} have another go.`
@@ -61,7 +61,7 @@ function composeSteps (job) {
       id: 'postin',
       user: true,
       validator: value => {
-        if (value.replace(' ', '').toUpperCase() === 'CV116FF') {
+        if (value.replace(' ', '').toUpperCase() === job.postcode) {
           return true
         }
         return `sorry Graham, I can't find ${value} have another go.`
