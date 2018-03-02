@@ -19,7 +19,7 @@ const steps = [
   },
   {
     id: '3',
-    message: 'Ah shucks!',
+    message: 'Ah shucks! Maybe some other time',
     end: true
   },
   {
@@ -98,6 +98,9 @@ const jobs = [
 ]
 
 class App extends Component {
+  // TODO: get the v querystring here
+  // TODO: look op the voucher number
+  // TODO: inject the details in the steps object
   render () {
     return (
       <div className='App'>
