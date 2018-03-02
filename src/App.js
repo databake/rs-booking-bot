@@ -100,7 +100,7 @@ const jobs = [
 class App extends Component {
   // TODO: get the v querystring here
   // TODO: look op the voucher number
-  // TODO: inject the details in the steps object
+  // TODO: inject the details in the steps object.
   render () {
     return (
       <div className='App'>
