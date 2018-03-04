@@ -1,10 +1,70 @@
 import React, { Component } from 'react'
 import ChatBot from 'react-simple-chatbot'
 import { parse } from 'query-string'
+import { sendSMS } from './helpers'
+import Review from './components/Review'
 import logo from './logo.svg'
 import './App.css'
 
-function composeSteps (job) {
+const composeSecureSteps = job => {
+  // send an SMS message
+  /*
+  sendSMS(
+    job.mobile,
+    'RSConnect',
+    `${job.code} is your RS Connect verification code`
+  )
+  */
+  return [
+    {
+      id: 'hello-world',
+      message: `Hello ${job.firstName || 'Policy Holder'}! I just sent a sms to your mobile with a code. When you're ready enter the code below`,
+      trigger: 'do-code'
+    },
+    {
+      id: 'do-code',
+      user: true,
+      validator: value => {
+        if (value === job.code) {
+          return true
+        }
+        return 'Incorrect code. Try again!'
+      },
+      trigger: 'bookDate'
+    },
+    {
+      id: 'bookDate',
+      message: 'We can install in your area next Wednesday, is that ok?',
+      trigger: 'when'
+    },
+    {
+      id: 'when',
+      options: [
+        { value: 1, label: 'Yes', trigger: 'confirm' },
+        { value: 2, label: 'No', trigger: 'ah-shucks' },
+        { value: 3, label: 'Choose another', trigger: 'review' }
+      ]
+    },
+    {
+      id: 'review',
+      component: <Review job={job} />,
+      asMessage: true,
+      trigger: 'confirm'
+    },
+    {
+      id: 'confirm',
+      message: "Ok you're all booked in. I'll send you a text to remind you.",
+      end: true
+    },
+    {
+      id: 'ah-shucks',
+      message: `Ah shucks! Maybe some other time. ${job.firstName}, did you try cleaning the lens?`,
+      end: true
+    }
+  ]
+}
+
+const composeSteps = job => {
   return [
     {
       id: 'hello-world',
@@ -48,7 +108,7 @@ function composeSteps (job) {
         if (value.replace(' ', '').toUpperCase() === job.vrn) {
           return true
         }
-        return `sorry Graham, I can't find ${value} have another go.`
+        return `sorry ${job.firstName}, I can't find ${value} have another go.`
       },
       trigger: 'postcode'
     },
@@ -95,7 +155,8 @@ const defaultJob = {
   vehicle: 'Range Rover Sport HSE',
   postcode: 'missing',
   voucher: 'VOU001',
-  mobile: '+447590532804'
+  mobile: '+447590532804',
+  code: '840048'
 }
 
 const jobs = [
@@ -106,7 +167,8 @@ const jobs = [
     vehicle: 'Range Rover Sport HSE',
     postcode: 'CV116FF',
     voucher: 'VOU001',
-    mobile: '+447590532804'
+    mobile: '+447590532804',
+    code: '840048'
   },
   {
     firstName: 'Connor',
@@ -115,7 +177,8 @@ const jobs = [
     vehicle: 'Range Rover Sport HSE',
     postcode: 'CV109HQ',
     voucher: 'VOU002',
-    mobile: '+447590532804'
+    mobile: '+447590532804',
+    code: '840048'
   }
 ]
 
@@ -127,17 +190,14 @@ class App extends Component {
 
   componentDidMount () {
     const parsed = parse(window.location.search)
-    // TODO: get the v querystring here
     if (parsed) {
       const job = this.fetchJob(parsed.v)
-      const steps = composeSteps(job)
+      const steps = composeSecureSteps(job)
       this.setState({
         steps,
         loading: false
       })
     }
-    // TODO: look op the voucher number
-    // TODO: inject the details in the steps object.
   }
 
   fetchJob = voucher => {
@@ -159,11 +219,7 @@ class App extends Component {
           <h1 className='App-title'>RS Connect Agent</h1>
         </header>
         <div style={{ margin: 20 }}>
-          <ChatBot
-            floating
-            headerTitle={'RS Connect Booking Agent'}
-            steps={steps}
-          />
+          <ChatBot headerTitle={'RS Connect Booking Agent'} steps={steps} />
         </div>
       </div>
     )
