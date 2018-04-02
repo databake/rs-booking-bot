@@ -6,6 +6,81 @@ import Review from './components/Review'
 import logo from './logo.svg'
 import './App.css'
 
+const composeBookedSteps = job => {
+  return [
+    {
+      id: 'hello-world',
+      message: `Hello ${job.firstName || 'Policy Holder'}! I just sent a sms to your mobile with a code. When you're ready enter the code below`,
+      trigger: 'do-code'
+    },
+    {
+      id: 'do-code',
+      user: true,
+      validator: value => {
+        if (value === job.code) {
+          return true
+        }
+        return 'Incorrect code. Try again!'
+      },
+      trigger: 'greeting'
+    },
+    {
+      id: 'greeting',
+      message: `${job.firstName || 'Policy Holder'} I see you have a job booked in for tomorrow. There are several things you can do now. Select the one you want!`,
+      trigger: 'next'
+    },
+    {
+      id: 'next',
+      options: [
+        { value: 1, label: 'Get a reminder', trigger: 'reminder' },
+        { value: 2, label: 'Re-schedule', trigger: 'schedule' },
+        { value: 3, label: 'Speak to operator', trigger: 'operator' },
+        { value: 4, label: 'FAQ', trigger: 'operator' }
+      ]
+    },
+    {
+      id: 'reminder',
+      message: 'Please select the type of reminder you want',
+      trigger: 'reminderType'
+    },
+    {
+      id: 'reminderType',
+      options: [
+        { value: 1, label: 'SMS', trigger: 'smsReminder' },
+        { value: 2, label: 'Email', trigger: 'emailReminder' }
+      ]
+    },
+    {
+      id: 'smsReminder',
+      message: `Ok ${job.firstName}, I just sent a SMS reminder to ${job.mobile}`,
+      end: true
+    },
+    {
+      id: 'emailReminder',
+      message: `Ok ${job.firstName}, I just sent you an email reminder to ${job.email}`,
+      end: true
+    },
+
+    {
+      id: 'schedule',
+      message: 'Ok, I see that this is the third time. Are you taking the micky?',
+      trigger: 'yesno'
+    },
+    {
+      id: 'yesno',
+      options: [
+        { value: 1, label: 'Yes', trigger: 'operator' },
+        { value: 2, label: 'No', trigger: 'operator' }
+      ]
+    },
+    {
+      id: 'operator',
+      message: `Ok, one of our team will contact you on ${job.mobile}`,
+      end: true
+    }
+  ]
+}
+
 const composeSecureSteps = job => {
   // send an SMS message
   /*
@@ -156,7 +231,8 @@ const defaultJob = {
   postcode: 'missing',
   voucher: 'VOU001',
   mobile: '+447590532804',
-  code: '840048'
+  code: '840048',
+  email: 'bad.email @me.com'
 }
 
 const jobs = [
@@ -168,7 +244,8 @@ const jobs = [
     postcode: 'CV116FF',
     voucher: 'VOU001',
     mobile: '+447590532804',
-    code: '840048'
+    code: '840048',
+    email: 'graham.barker @me.com'
   },
   {
     firstName: 'Connor',
@@ -178,7 +255,8 @@ const jobs = [
     postcode: 'CV109HQ',
     voucher: 'VOU002',
     mobile: '+447590532804',
-    code: '840048'
+    code: '840048',
+    email: 'connor.checkley @rsconnect.com'
   }
 ]
 
@@ -192,7 +270,7 @@ class App extends Component {
     const parsed = parse(window.location.search)
     if (parsed) {
       const job = this.fetchJob(parsed.v)
-      const steps = composeSecureSteps(job)
+      const steps = composeBookedSteps(job)
       this.setState({
         steps,
         loading: false
@@ -219,7 +297,11 @@ class App extends Component {
           <h1 className='App-title'>RS Connect Agent</h1>
         </header>
         <div style={{ margin: 20 }}>
-          <ChatBot floating headerTitle={'RS Connect Booking Agent'} steps={steps} />
+          <ChatBot
+            floating
+            headerTitle={'RS Connect Booking Agent'}
+            steps={steps}
+          />
         </div>
       </div>
     )
