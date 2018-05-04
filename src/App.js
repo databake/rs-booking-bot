@@ -298,7 +298,7 @@ class App extends Component {
         </header>
         <div style={{ margin: 20 }}>
           <ChatBot
-            floating
+            floating={false}
             headerTitle={'RS Connect Booking Agent'}
             steps={steps}
           />
