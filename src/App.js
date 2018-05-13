@@ -292,11 +292,7 @@ class App extends Component {
     const { steps } = this.state
     return (
       <div className='App'>
-        <ChatBot
-          floating={false}
-          headerTitle={'RS Connect Booking Agent'}
-          steps={steps}
-        />
+        <ChatBot headerTitle={'RS Connect Booking Agent'} steps={steps} />
       </div>
     )
   }
