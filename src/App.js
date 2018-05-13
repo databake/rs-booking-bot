@@ -290,13 +290,7 @@ class App extends Component {
       return <div style={{ flex: 1, backgroundColor: 'red' }} />
     }
     const { steps } = this.state
-    return (
-      <ChatBot
-        headerTitle={'RS Connect Booking Agent'}
-        floating
-        steps={steps}
-      />
-    )
+    return <ChatBot headerTitle={'RS Connect Booking Agent'} steps={steps} />
   }
 }
 
